@@ -1,5 +1,8 @@
 # factored-datathon-2023-GanGogh
 
+Follow the provided repo structure as long as possible:
+
+```yaml
 ├── README.md                 # Project overview and documentation
 ├── requirements.txt          # Dependencies to install for the project
 ├── setup.cfg                 # Configurations of the execution environment
