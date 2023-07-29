@@ -15,7 +15,7 @@ AUTH_TYPE_ADLS = "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider"
 SET_SAS_TOKEN = f"fs.azure.sas.fixed.token.{storage_account}"\
 				+ f".{AZURE_SERVER_CORE}"
 ADLS_METADATA_PATH = f"abfss://{container_name}@{storage_account}"\
-					 + f".{AZURE_SERVER_CORE}/{path_metadata}/*"
+					 + f".{AZURE_SERVER_CORE}/{path_metadata}"
 ADLS_REVIEWS_PATH = f"abfss://{container_name}@{storage_account}"\
 					+ f".{AZURE_SERVER_CORE}/{path_reviews}"
 
@@ -40,7 +40,8 @@ def get_input_dataframe(list_files: List) -> DataFrame:
 	                      for file_listed in list_files
 	                     ]
 	complete_json_list = list(itertools.chain(*complete_json_list))
-	return spark.read.json(complete_json_list)
+	return spark.read.json(complete_json_list)\
+						.withColumn("source_file", func.input_file_name())
 
 
 
