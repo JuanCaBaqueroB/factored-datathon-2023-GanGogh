@@ -9,7 +9,8 @@ Follow the provided repo structure as long as possible:
 ├── examples                  # Examples about how to use the project
 │   └── notebooks             # Jupyter notebooks for data exploration, analysis, experiment
 ├── src                       # Source code for data processing, modeling, training, eval
-│   ├── load_data_step        # Code to load input data
+|   ├── load_data_step
+│   ├── collect_data          # Code to collect data from different sources
 │   ├── train_step            # Code to train a model
 │   ├── predict_step          # Code to predict with a previously existing model
 │   ├── preprocess_step       # Code to preprocess data before going into the model
