@@ -1,0 +1,83 @@
+.ico_home {
+    display: block;
+    height: 40px;
+    background: black;
+    color: black;
+    text-decoration: none;
+    padding-left: 40px;
+}
+
+    .ico_home:before {
+        content: '';
+        background: url(Icons/Home_icon.svg);
+        background-size: cover;
+        position: absolute;
+        width: 23px;
+        height: 26px;
+        fill: red;
+        margin-left: -30px;
+    }
+
+.ico_upload {
+    display: block;
+    height: 40px;
+    background: black;
+    color: black;
+    text-decoration: none;
+    padding-left: 40px;
+}
+
+    .ico_upload:before {
+        content: '';
+        background: url(Icons/Rocket_icon.svg);
+        background-size: cover;
+        position: absolute;
+        width: 23px;
+        height: 26px;
+        fill: red;
+        margin-left: -30px;
+    }
+
+    .ico_upload.circle img {
+        background-color: #d8f2aa;
+        border-radius: 50%;
+    }
+
+.ico_store {
+    display: block;
+    height: 40px;
+    background: black;
+    color: black;
+    text-decoration: none;
+    padding-left: 40px;
+}
+    .ico_store:before {
+        content: '';
+        background: url(Icons/Atom2_icon.svg);
+        background-size: cover;
+        position: absolute;
+        width: 23px;
+        height: 26px;
+        fill: red;
+        margin-left: -30px;
+    }
+
+
+.ico_about_ {
+    display: block;
+    height: 40px;
+    background: black;
+    color: yellow;
+    text-decoration: none;
+    padding-left: 40px;
+}
+
+    .ico_about_:before {
+        content: '';
+        background: url(Icons/Alien_icon.svg);
+        background-size: cover;
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        margin-left: -30px;
+    }

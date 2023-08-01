@@ -1,0 +1,23 @@
+.app-header {
+    padding: 40px;
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+    font-size: 30px;
+}
+
+.sidebar-wrapper {
+    background: url(/images/logj.jpg) no-repeat center;
+    // an maybe the quotes are not necessary. Check if the path is correct ! background-size: cover;
+    // change this to 'contain' if you want to test different modes -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    margin-left: -250px;
+    left: 250px;
+    width: 250px;
+    position: fixed;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: all 0.4s ease 0s;
+}

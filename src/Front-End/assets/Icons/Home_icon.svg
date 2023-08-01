@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 35 35" enable-background="new 0 0 35 35">
+<style type="text/css"><![CDATA[
+  .cc-lead{fill: #CC0000;}
+  .cc-base{fill: #FFB000;}
+]]></style>
+  <path class="cc-base" d="M17.5,10.329l9.5,9.5V28h-5v-8h-9v8H8v-8.172L17.5,10.329 M18,8h-1L6,19v11h9v-8h5v8h9V19L18,8L18,8z"/>
+  <polygon class="cc-lead" points="32,20 17.5,5.5 3,20 3,17 17.5,2.5 32,17   "/>
+</svg>
