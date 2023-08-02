@@ -1,30 +1,5 @@
 # Databricks notebook source
-import warnings
-warnings.filterwarnings('ignore')
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-import matplotlib.pyplot as plt
-from wordcloud import WordCloud
-
-# COMMAND ----------
-
-# MAGIC %md NLTK analysis
-
-# COMMAND ----------
-
-import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-from nltk.corpus import stopwords
-
-# COMMAND ----------
-
-# MAGIC %sql 
-# MAGIC select * from reviews;
-
-# COMMAND ----------
-
-# MAGIC %md Model consumption on Generative AI model to perform sentiment analysis
+# MAGIC %md Model consumption on generative AI model to perform sentiment analysis
 
 # COMMAND ----------
 
@@ -45,9 +20,11 @@ allowSelfSignedHttps(True) # this line is needed if you use self-signed certific
 # depending on the format your endpoint expects.
 # More information can be found here:
 # https://docs.microsoft.com/azure/machine-learning/how-to-deploy-advanced-entry-script
+# Data consumption example
 comment="Looks good fits well."
-data = {"inputs": {"input_signature":[comment]}}
-#my_list = list(data)
+comment2="Looks bad."
+comment3="I don't have opinions"
+data = {"inputs": {"input_signature":[comment,comment2,comment3]}}
 
 body = str.encode(json.dumps(data))
 
@@ -74,16 +51,6 @@ except urllib.error.HTTPError as error:
     # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
     print(error.info())
     print(error.read().decode("utf8", 'ignore'))
-
-# COMMAND ----------
-
-data = {'Looks good fits well.'}
-my_list = list(data)
-my_list
-
-# COMMAND ----------
-
-data
 
 # COMMAND ----------
 
