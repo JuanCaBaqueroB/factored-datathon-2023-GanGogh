@@ -1,6 +1,7 @@
 from azure.eventhub import EventHubConsumerClient
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import json
+from datetime import datetime
 
 # Event Hub namespace, topic, and connection details
 eventhub_namespace = "factored-datathon"
@@ -29,7 +30,8 @@ def write_batch_to_blob():
 
     # Generate a unique file name for the batch
     # (You can customize the file name as per your requirement)
-    blob_name = "batch_events_{}.json".format(len(batched_events))
+    reception_time = int(datetime.utcnow().timestamp())
+    blob_name = "batch_events_{}.json".format(reception_time)
 
     # Create a new blob with the batched events data in JSON format
     blob_client = container_client.get_blob_client(blob_name)
