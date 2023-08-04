@@ -7,6 +7,7 @@ import urllib.request
 import json
 import os
 import ssl
+import ast
 
 def allowSelfSignedHttps(allowed):
     # bypass the server certificate verification on client side
@@ -74,8 +75,6 @@ dfList = dfrev.select('summary').rdd.flatMap(lambda x: x).collect()
 result = get_sentiment(dfList)
 result = result.decode()
 
-import ast
-
 # Convert the string to a list of dictionaries
 output_list = ast.literal_eval(result)
 
@@ -84,7 +83,7 @@ print(output_list)
 
 # COMMAND ----------
 
-output_list[9]
+print(output_list[2]["0"],output_list[3]["0"])
 
 # COMMAND ----------
 
