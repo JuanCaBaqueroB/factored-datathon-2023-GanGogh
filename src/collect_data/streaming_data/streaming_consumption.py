@@ -71,6 +71,7 @@ def on_event(partition_context, event):
     # Create a new blob with the event data in JSON format
     blob_client = container_client.get_blob_client(blob_name)
     blob_client.upload_blob(received_data, overwrite=True)
+    print(f'Blob uploaded as {blob_name}')
 
 
 # Create an instance of the EventHubConsumerClient
