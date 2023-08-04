@@ -1,0 +1,4 @@
+azure
+azure-eventhub
+azure-storage
+azure-functions
