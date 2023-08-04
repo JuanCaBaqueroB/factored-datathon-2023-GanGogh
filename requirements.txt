@@ -1,4 +1,4 @@
-azure
+azure-core
 azure-eventhub
-azure-storage
+azure-storage-blob
 azure-functions
