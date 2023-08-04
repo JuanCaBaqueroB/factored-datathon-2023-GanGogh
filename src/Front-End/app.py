@@ -14,8 +14,8 @@ from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
 # Azure Blob Storage credentials
 storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=test1fast;AccountKey=QnSkjChqVUQWCLs9t+yDSK4w02oQVBjWtP9dOOBhpw1O002GrWnk8LHfsU8Ys16QjNKmjnDw2RbM+AStEQNjww==;EndpointSuffix=core.windows.net"
-container_name = "testblob1"
-csv_filename = "2014_apple_stock.csv"
+container_name = "visualization-tables"
+csv_filename = "summary_score_reviews.csv"
 
 # Connect to Azure Blob Storage
 blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
@@ -157,8 +157,16 @@ def render_page_content(pathname):
         return html.Div([
                          html.P("Welcome Page"),
                          html.H4('Simple stock plot with adjustable axis'),
-                         html.Button("Switch Axis", n_clicks=0, id='button_graph'),
-                         dcc.Graph(id="graph_apple")
+                         dcc.Dropdown(
+                            id='dropdown-category',
+                            options=[
+                                {'label': 'Software', 'value': 'Software'},
+                                {'label': 'Toys & Games', 'value': 'Toys & Games'},
+                                {'label': 'Video Games', 'value': 'Video Games'},
+                                {'label':'Sports Collectibles', 'value':'Sports Collectibles'}
+                            ],
+                            value='Software'),
+                         dcc.Graph(id='graph-with-dropdown')
                          ])
     elif pathname == "/page-2":
         return html.Div([
@@ -190,16 +198,13 @@ def toggle_classname(n, classname):
     return ""
 
 @app.callback(
-    Output("graph_apple", "figure"),
-    Input("button_graph", "n_clicks"))
-def display_graph(n_clicks):
-    if n_clicks % 2 == 0:
-        x, y = 'AAPL_x', 'AAPL_y'
-    else:
-        x, y = 'AAPL_y', 'AAPL_x'
-
-    fig = px.line(df, x=x, y=y)
+    Output("graph-with-dropdown", "figure"),
+    Input('dropdown-category', 'value'))
+def display_graph(selected_category):
+    filtered_df = df[df['maincat_10'] == selected_category]
+    fig = px.bar(filtered_df, x='date', y='Average', title=f"Data for Category {selected_category}")
     return fig
+
 
 @app.callback(
     Output("collapse", "is_open"),
