@@ -14,8 +14,8 @@ from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
 # Azure Blob Storage credentials
 storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=test1fast;AccountKey=QnSkjChqVUQWCLs9t+yDSK4w02oQVBjWtP9dOOBhpw1O002GrWnk8LHfsU8Ys16QjNKmjnDw2RbM+AStEQNjww==;EndpointSuffix=core.windows.net"
-container_name = "testblob1"
-csv_filename = "2014_apple_stock.csv"
+container_name = "visualization-tables"
+csv_filename = "summary_score_reviews.csv"
 
 # Connect to Azure Blob Storage
 blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
@@ -29,9 +29,10 @@ with open(csv_filename, "wb") as f:
 df = pd.read_csv(csv_filename)
 
 #Image Sources
-image_sidebar= 'Images/side_bar_logo3.png' # replace with your own image
+image_sidebar= 'Images/side_bar_logo3.png'
+image_sidebar_2= 'Images/side_bar_logo4.png'
 encoded_image = base64.b64encode(open(image_sidebar, 'rb').read())
-
+encoded_image_2 = base64.b64encode(open(image_sidebar_2, 'rb').read())
 
 #Button definition
 button_groups = html.Div(
@@ -99,6 +100,7 @@ sidebar_header = dbc.Row(
             # vertically align the toggle in the center
             align="center",
         ),
+
     ]
 )
 
@@ -125,6 +127,7 @@ sidebar = html.Div(
                     dbc.NavLink("General overview", href="/page-2", id="page-2-link", className="ico_upload"),
                     dbc.NavLink("Categories dashboard", href="/page-3", id="page-3-link", className="ico_store"),
                     dbc.NavLink("About Us", href="/page-4", id="page-4-link", className="ico_about_"),
+                    dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(encoded_image_2.decode()), className="display-4")),
                 ],
                 vertical=True,
                 pills=True,
@@ -157,13 +160,55 @@ def render_page_content(pathname):
         return html.Div([
                          html.P("Welcome Page"),
                          html.H4('Simple stock plot with adjustable axis'),
-                         html.Button("Switch Axis", n_clicks=0, id='button_graph'),
-                         dcc.Graph(id="graph_apple")
+                         dcc.Dropdown(
+                            id='dropdown-category-verified',
+                            options=[
+                                {'label': 'True', 'value': 1},
+                                {'label': 'False', 'value': 0}
+                            ],
+                            value = 1),
+                         dcc.Dropdown(
+                            id='dropdown-category',
+                            options=[
+                                {'label': 'Software', 'value': 'Software'},
+                                {'label': 'Books', 'value': 'Books'},
+                                {'label': 'Movies & TV', 'value': 'Movies & TV'},
+                                {'label': 'Audible Audiobooks', 'value': 'Audible Audiobooks'},
+                                {'label': 'Buy a Kindle', 'value': 'Buy a Kindle'},
+                                {'label': 'Health & Personal Care', 'value': 'Health & Personal Care'},
+                                {'label': 'Pet Supplies', 'value': 'Pet Supplies'},
+                                {'label': 'Toys & Games', 'value': 'Toys & Games'},
+                                {'label': 'Video Games', 'value': 'Video Games'},
+                                {'label': 'Sports Collectibles', 'value': 'Sports Collectibles'},
+                                {'label': 'Luxury Beauty', 'value': 'Luxury Beauty'}
+                            ],
+                            value='Software'),
+                         dcc.Graph(id='graph-with-dropdown',
+                                   config={"displayModeBar": False},
+                                   animate=True,)
                          ])
     elif pathname == "/page-2":
         return html.Div([
                          html.P("Categories dashboard"),
-                         button
+                         dcc.Dropdown(
+                            id='dropdown-category-qty',
+                            options=[
+                                {'label': 'Software', 'value': 'Software'},
+                                {'label': 'Books', 'value': 'Books'},
+                                {'label': 'Movies & TV', 'value': 'Movies & TV'},
+                                {'label': 'Audible Audiobooks', 'value': 'Audible Audiobooks'},
+                                {'label': 'Buy a Kindle', 'value': 'Buy a Kindle'},
+                                {'label': 'Health & Personal Care', 'value': 'Health & Personal Care'},
+                                {'label': 'Pet Supplies', 'value': 'Pet Supplies'},
+                                {'label': 'Toys & Games', 'value': 'Toys & Games'},
+                                {'label': 'Video Games', 'value': 'Video Games'},
+                                {'label': 'Sports Collectibles', 'value': 'Sports Collectibles'},
+                                {'label': 'Luxury Beauty', 'value': 'Luxury Beauty'}
+                            ],
+                            value='Software'),
+                            dcc.Graph(id='graph-with-dropdown-qty',
+                                      config={"displayModeBar": False},
+                                      animate=True, )
                          ])
     elif pathname == "/page-3":
         return html.P("Oh cool, this is page 3!")
@@ -189,16 +234,25 @@ def toggle_classname(n, classname):
         return "collapsed"
     return ""
 
-@app.callback(
-    Output("graph_apple", "figure"),
-    Input("button_graph", "n_clicks"))
-def display_graph(n_clicks):
-    if n_clicks % 2 == 0:
-        x, y = 'AAPL_x', 'AAPL_y'
-    else:
-        x, y = 'AAPL_y', 'AAPL_x'
 
-    fig = px.line(df, x=x, y=y)
+@app.callback(
+    Output("graph-with-dropdown-qty", "figure"),
+    Input('dropdown-category-qty', 'value'))
+def display_graph(selected_category):
+    filtered_df = df[df['maincat_10'] == selected_category]
+    fig = px.line(filtered_df, x='date', y='Qty', title=f"Data for Category {selected_category}").update_layout(
+    {"plot_bgcolor": "rgba(1, 6, 4, 5)", "paper_bgcolor": "rgba(1, 2, 3, 3)"})
+    return fig
+
+
+@app.callback(
+    Output("graph-with-dropdown", "figure"),
+    Input('dropdown-category-verified', 'value'),
+    Input('dropdown-category', 'value'))
+def display_graph(selected_category_v, selected_category):
+    filtered_df = df[(df['verified'] == bool(selected_category_v)) & (df['maincat_10'] == selected_category)]
+    fig = px.line(filtered_df, x='date', y='Average', title=f"Data for Category {selected_category}").update_layout(
+    {"plot_bgcolor": "rgba(1, 6, 4, 5)", "paper_bgcolor": "rgba(1, 2, 3, 3)"})
     return fig
 
 @app.callback(
