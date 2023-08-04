@@ -13,7 +13,7 @@ consumer_group = "gangogh"  # You can specify your custom consumer group here
 
 # Azure Blob Storage connection string and container name
 storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=test1fast;AccountKey=QnSkjChqVUQWCLs9t+yDSK4w02oQVBjWtP9dOOBhpw1O002GrWnk8LHfsU8Ys16QjNKmjnDw2RbM+AStEQNjww==;EndpointSuffix=core.windows.net"
-container_name = "testblob1"
+container_name = "streaming-events-captured"
 
 # Batch size for writing events
 batch_size = 1000
