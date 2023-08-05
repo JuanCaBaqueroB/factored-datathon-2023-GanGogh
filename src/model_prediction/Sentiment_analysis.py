@@ -10,6 +10,7 @@ import ssl
 import ast
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
+from pyspark.sql.types import StructType, StructField, StringType
 
 def allowSelfSignedHttps(allowed):
     # bypass the server certificate verification on client side
@@ -74,10 +75,11 @@ df_n_rows = df_rev.filter(col("ID").between(1000,1100)).select("ID", "reviewText
 #display(df_rev)
 
 #Convert spark DF column to list
-dfList = df_n_rows.select('reviewText').rdd.flatMap(lambda x: x).collect()
+dfReview = df_n_rows.select('reviewText').rdd.flatMap(lambda x: x).collect()
+dfId = df_n_rows.select('ID').rdd.flatMap(lambda x: x).collect()
 
 #Sent to ML service
-result = get_sentiment(dfList)
+result = get_sentiment(dfReview)
 
 if result is not None:
     decoded_result = result.decode()
@@ -87,37 +89,35 @@ else:
     print("Result is None, no decoding needed.")
 
 # Convert the string to a list of dictionaries
-output_list = ast.literal_eval(decoded_result)
+output = ast.literal_eval(decoded_result)
+# Convert to a list of values
+output_list = [item['0'] for item in output]
+dfList=[dfId,output_list]
+
+# Transpose the list using zip
+transposed_list = list(map(list, zip(*dfList)))
 
 # Print the resulting list
-print(len(output_list))
+print(len(transposed_list))
 
 # COMMAND ----------
 
-output_list
+# Assuming you already have a SparkSession called 'spark' and a list called 'data_list' 
+# giving column names of dataframe
+columns = ["ID2","Sentiment"]
 
-# COMMAND ----------
-
-#Add list to spark dataframe
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType
-
-# Assuming you already have a SparkSession called 'spark' and a list called 'data_list'
-# Define the schema of the list data (replace 'column_name' with your column name)
-schema = StructType([StructField("sentiment", StringType(), True)])
-
-# Create a DataFrame from the list
-data_df = spark.createDataFrame(output_list, schema)
+# creating a dataframe
+df_sentiment = spark.createDataFrame(transposed_list, columns)
+  
+# show data frame
+# dataframe.show()
 
 # Union the DataFrame with the Delta table
-updated_df = df_rev.union(data_df)
+updated_df = df_rev.join(df_sentiment, df_rev.ID == df_sentiment.ID2).drop("ID2")
+display(updated_df.limit(5))
 
 # Write the updated DataFrame back to the Delta table
-updated_df.write.format("delta").mode("overwrite").save("your_delta_table")
-
-
-#Replace the column
-
+# updated_df.write.format("delta").mode("overwrite").save("your_delta_table")
 
 # COMMAND ----------
 
