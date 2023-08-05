@@ -11,24 +11,14 @@ from dash.dependencies import Input, Output, State
 import pandas as pd
 import plotly.express as px
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
-from azure.keyvault.secrets import SecretClient
-from azure.identity import DefaultAzureCredential
-
-key_vault_name = "mlfactoreddata3978247496"
-keyvault_uri = f"https://{key_vault_name}.vault.azure.net"
-
-credential = DefaultAzureCredential()
-client = SecretClient(vault_url=keyvault_uri, credential=credential)
-
 
 # Azure Blob Storage credentials
-storage_connection_string = client.get_secret("STORAGE-ACCOUNT-CONNSTRING")
+storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=test1fast;AccountKey=QnSkjChqVUQWCLs9t+yDSK4w02oQVBjWtP9dOOBhpw1O002GrWnk8LHfsU8Ys16QjNKmjnDw2RbM+AStEQNjww==;EndpointSuffix=core.windows.net"
 container_name = "visualization-tables"
 csv_filename = "summary_score_reviews.csv"
 
 # Connect to Azure Blob Storage
-blob_service_client = BlobServiceClient.from_connection_string(
-                                                    storage_connection_string)
+blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
 container_client = blob_service_client.get_container_client(container_name)
 blob_client = container_client.get_blob_client(csv_filename)
 
@@ -62,7 +52,7 @@ button = dbc.Button("Upload", color="primary")
 #------------------------------------------
 app = dash.Dash(
     external_stylesheets=[dbc.themes.CYBORG],
-    # These meta_tags ensure content is scaled correctly on different devices.
+    # These meta_tags ensure content is scaled correctly on different devices. Don't Delete!!
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ],
@@ -78,9 +68,7 @@ app.config.suppress_callback_exceptions = True
 # it consists of a title, and a toggle, the latter is hidden on large screens
 sidebar_header = dbc.Row(
     [
-        dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(
-                            encoded_image.decode()), className="display-4")
-                ),
+        dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(encoded_image.decode()), className="display-4")),
         dbc.Col(
             [
                 html.Button(
@@ -135,18 +123,11 @@ sidebar = html.Div(
         dbc.Collapse(
             dbc.Nav(
                 [
-                    dbc.NavLink("Home", href="/page-1", id="page-1-link",
-                                className="ico_home", ),
-                    dbc.NavLink("General overview", href="/page-2",
-                                id="page-2-link", className="ico_upload"),
-                    dbc.NavLink("Categories dashboard", href="/page-3",
-                                id="page-3-link", className="ico_store"),
-                    dbc.NavLink("About Us", href="/page-4", id="page-4-link",
-                                className="ico_about_"),
-                    dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'\
-                                .format(encoded_image_2.decode()),
-                                        className="display-4")
-                            ),
+                    dbc.NavLink("Home", href="/page-1", id="page-1-link", className="ico_home", ),
+                    dbc.NavLink("General overview", href="/page-2", id="page-2-link", className="ico_upload"),
+                    dbc.NavLink("Categories dashboard", href="/page-3", id="page-3-link", className="ico_store"),
+                    dbc.NavLink("About Us", href="/page-4", id="page-4-link", className="ico_about_"),
+                    dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(encoded_image_2.decode()), className="display-4")),
                 ],
                 vertical=True,
                 pills=True,
@@ -178,7 +159,7 @@ def render_page_content(pathname):
     if pathname in ["/", "/page-1"]:
         return html.Div([
                          html.P("Welcome Page"),
-                         html.H4('Simple stock plot with adjustable axis'),
+                         html.H4('Historical Average Review Score per Category'),
                          dcc.Dropdown(
                             id='dropdown-category-verified',
                             options=[
@@ -191,23 +172,15 @@ def render_page_content(pathname):
                             options=[
                                 {'label': 'Software', 'value': 'Software'},
                                 {'label': 'Books', 'value': 'Books'},
-                                {'label': 'Movies & TV', 'value':'Movies & TV'},
-                                {'label': 'Audible Audiobooks',
-                                            'value': 'Audible Audiobooks'},
-                                {'label': 'Buy a Kindle',
-                                            'value': 'Buy a Kindle'},
-                                {'label': 'Health & Personal Care',
-                                            'value': 'Health & Personal Care'},
-                                {'label': 'Pet Supplies',
-                                            'value': 'Pet Supplies'},
-                                {'label': 'Toys & Games',
-                                            'value': 'Toys & Games'},
-                                {'label': 'Video Games',
-                                            'value': 'Video Games'},
-                                {'label': 'Sports Collectibles',
-                                            'value': 'Sports Collectibles'},
-                                {'label': 'Luxury Beauty',
-                                            'value': 'Luxury Beauty'}
+                                {'label': 'Movies & TV', 'value': 'Movies & TV'},
+                                {'label': 'Audible Audiobooks', 'value': 'Audible Audiobooks'},
+                                {'label': 'Buy a Kindle', 'value': 'Buy a Kindle'},
+                                {'label': 'Health & Personal Care', 'value': 'Health & Personal Care'},
+                                {'label': 'Pet Supplies', 'value': 'Pet Supplies'},
+                                {'label': 'Toys & Games', 'value': 'Toys & Games'},
+                                {'label': 'Video Games', 'value': 'Video Games'},
+                                {'label': 'Sports Collectibles', 'value': 'Sports Collectibles'},
+                                {'label': 'Luxury Beauty', 'value': 'Luxury Beauty'}
                             ],
                             value='Software'),
                          dcc.Graph(id='graph-with-dropdown',
@@ -222,23 +195,15 @@ def render_page_content(pathname):
                             options=[
                                 {'label': 'Software', 'value': 'Software'},
                                 {'label': 'Books', 'value': 'Books'},
-                                {'label': 'Movies & TV', 'value':'Movies & TV'},
-                                {'label': 'Audible Audiobooks',
-                                            'value': 'Audible Audiobooks'},
-                                {'label': 'Buy a Kindle',
-                                            'value': 'Buy a Kindle'},
-                                {'label': 'Health & Personal Care',
-                                            'value': 'Health & Personal Care'},
-                                {'label': 'Pet Supplies',
-                                            'value': 'Pet Supplies'},
-                                {'label': 'Toys & Games',
-                                            'value': 'Toys & Games'},
-                                {'label': 'Video Games',
-                                            'value': 'Video Games'},
-                                {'label': 'Sports Collectibles',
-                                            'value': 'Sports Collectibles'},
-                                {'label': 'Luxury Beauty',
-                                            'value': 'Luxury Beauty'}
+                                {'label': 'Movies & TV', 'value': 'Movies & TV'},
+                                {'label': 'Audible Audiobooks', 'value': 'Audible Audiobooks'},
+                                {'label': 'Buy a Kindle', 'value': 'Buy a Kindle'},
+                                {'label': 'Health & Personal Care', 'value': 'Health & Personal Care'},
+                                {'label': 'Pet Supplies', 'value': 'Pet Supplies'},
+                                {'label': 'Toys & Games', 'value': 'Toys & Games'},
+                                {'label': 'Video Games', 'value': 'Video Games'},
+                                {'label': 'Sports Collectibles', 'value': 'Sports Collectibles'},
+                                {'label': 'Luxury Beauty', 'value': 'Luxury Beauty'}
                             ],
                             value='Software'),
                             dcc.Graph(id='graph-with-dropdown-qty',
@@ -248,7 +213,32 @@ def render_page_content(pathname):
     elif pathname == "/page-3":
         return html.P("Oh cool, this is page 3!")
     elif pathname == "/page-4":
-        return html.P("Oh cool, this is page 4!")
+                return html.Div([
+                    html.Div([
+                    # Team Member 1
+                    html.H2("Juan Camilo Baquero"),
+                    html.P("Electronic engineer with experience in banking, retail, software development and "
+                           "consulting. I enjoy impacting business through technology, designing simple and useful "
+                           "solutions."),
+                    html.A("LinkedIn Profile", href="https://www.linkedin.com/in/juan-camilo-baquero-bustos"),
+                ], style={'border': '1px solid #ccc', 'padding': '10px', 'margin': '10px'}),
+                    html.Div([
+                        # Team Member 2
+                        html.H2("Cristian Camilo Galindo González"),
+                        html.P("Lead machine engineer with expertise in optimizing complex systems. Skilled in "
+                               "process automation and continuous improvement. Passionate about driving efficiency "
+                               "and innovation."),
+                        html.A("LinkedIn Profile", href="https://www.linkedin.com/in/ccgalindog/"),
+                    ], style={'border': '1px solid #ccc', 'padding': '10px', 'margin': '10px'}),
+                    html.Div([
+                        # Team Member 3
+                        html.H2("Jose Nicolás González Guatibonza"),
+                        html.P("Experienced Senior Data Engineer with 8+ years in Telecommunications, Retail, "
+                               "Banking, and Tech-Consulting. Known for a personable approach to stakeholders and "
+                               "providers, delivering operational excellence"),
+                        html.A("LinkedIn Profile", href="https://www.linkedin.com/in/jose-nicolas-gonzalez-guatibonza/"),
+                    ], style={'border': '1px solid #ccc', 'padding': '10px', 'margin': '10px'}),
+                ])
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [
@@ -275,11 +265,18 @@ def toggle_classname(n, classname):
     Input('dropdown-category-qty', 'value'))
 def display_graph(selected_category):
     filtered_df = df[df['maincat_10'] == selected_category]
-    fig = px.line(filtered_df, x='date', y='Qty',
-                    title=f"Data for Category {selected_category}")\
-            .update_layout({"plot_bgcolor": "rgba(1, 6, 4, 5)",
-                            "paper_bgcolor": "rgba(1, 2, 3, 3)"}
-                          )
+    fig = px.line(filtered_df, x='date', y='Qty', title=f"Data for Category {selected_category}")
+    fig.update_layout(
+        font_family="Courier New",
+        font_color="White",
+        title_font_family="Courier New",
+        title_font_color="White",
+        legend_title_font_color="White",
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(84, 79, 178, 0.7)'
+    )
+    fig.update_traces(line_color='#00ccff', line_width=2)
+
     return fig
 
 
@@ -288,12 +285,19 @@ def display_graph(selected_category):
     Input('dropdown-category-verified', 'value'),
     Input('dropdown-category', 'value'))
 def display_graph(selected_category_v, selected_category):
-    filtered_df = df[(df['verified'] == bool(selected_category_v))\
-                        & (df['maincat_10'] == selected_category)]
-    fig = px.line(filtered_df, x='date', y='Average',
-                    title=f"Data for Category {selected_category}")\
-            .update_layout(
-    {"plot_bgcolor": "rgba(1, 6, 4, 5)", "paper_bgcolor": "rgba(1, 2, 3, 3)"})
+    filtered_df = df[(df['verified'] == bool(selected_category_v)) & (df['maincat_10'] == selected_category)]
+    fig = px.line(filtered_df, x='date', y='Average', title=f"Data for Category {selected_category}")
+    fig.update_layout(
+        font_family="Courier New",
+        font_color="White",
+        title_font_family="Courier New",
+        title_font_color="White",
+        legend_title_font_color="White",
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(84, 79, 178, 0.7)'
+    )
+    fig.update_traces(line_color='#00ccff', line_width=2)
+
     return fig
 
 @app.callback(

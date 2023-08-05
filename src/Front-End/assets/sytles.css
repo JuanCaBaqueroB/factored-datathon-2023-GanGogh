@@ -1,0 +1,20 @@
+body {
+  background-color: rgba(84, 79, 178, 0.76);
+  font-family: "Arial", sans-serif; /* You can replace "Arial" with any professional and friendly font of your choice */
+  color: white;
+  line-height: 1.6;
+}
+
+/* If you want to style specific elements differently, you can add additional CSS rules below */
+h1, h2, h3, h4, h5, h6 {
+  /* Heading styles */
+  font-family: "Your-Heading-Font", sans-serif; /* Replace "Your-Heading-Font" with your preferred font for headings */
+  font-weight: bold;
+}
+
+p {
+  /* Paragraph styles */
+  font-size: 16px;
+}
+
+/* Add any other element styles as needed */
