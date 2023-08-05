@@ -8,6 +8,8 @@ import json
 import os
 import ssl
 import ast
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 
 def allowSelfSignedHttps(allowed):
     # bypass the server certificate verification on client side
@@ -62,28 +64,60 @@ def get_sentiment(inputData):
 # COMMAND ----------
 
 #Load table on dataframe
-dfrev = spark.read.format("delta").load("dbfs:/user/hive/warehouse/reviews")
-dfrev.count()
+df_rev = spark.read.format("delta").load("dbfs:/user/hive/warehouse/reviews")
+df_rev.count()
 
 # COMMAND ----------
 
+# Access the first 100 rows (rows with ID from 1 to 100)
+df_n_rows = df_rev.filter(col("ID").between(1000,1100)).select("ID", "reviewText")
+#display(df_rev)
+
 #Convert spark DF column to list
-dfrev = dfrev.limit(10)
-dfList = dfrev.select('summary').rdd.flatMap(lambda x: x).collect()
+dfList = df_n_rows.select('reviewText').rdd.flatMap(lambda x: x).collect()
 
 #Sent to ML service
 result = get_sentiment(dfList)
-result = result.decode()
+
+if result is not None:
+    decoded_result = result.decode()
+    # Your code to process the decoded result goes here
+else:
+    # Handle the case when 'result' is None
+    print("Result is None, no decoding needed.")
 
 # Convert the string to a list of dictionaries
-output_list = ast.literal_eval(result)
+output_list = ast.literal_eval(decoded_result)
 
 # Print the resulting list
-print(output_list)
+print(len(output_list))
 
 # COMMAND ----------
 
-print(output_list[2]["0"],output_list[3]["0"])
+output_list
+
+# COMMAND ----------
+
+#Add list to spark dataframe
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType
+
+# Assuming you already have a SparkSession called 'spark' and a list called 'data_list'
+# Define the schema of the list data (replace 'column_name' with your column name)
+schema = StructType([StructField("sentiment", StringType(), True)])
+
+# Create a DataFrame from the list
+data_df = spark.createDataFrame(output_list, schema)
+
+# Union the DataFrame with the Delta table
+updated_df = df_rev.union(data_df)
+
+# Write the updated DataFrame back to the Delta table
+updated_df.write.format("delta").mode("overwrite").save("your_delta_table")
+
+
+#Replace the column
+
 
 # COMMAND ----------
 
@@ -104,4 +138,4 @@ dfrev.foreachPartition(process_partition)
 
 # MAGIC %sql
 # MAGIC SELECT asin, overall, summary, reviewerID, verified,to_date(from_unixtime(unixReviewTime, 'MM/yyyy'),"MM/yyyy") as date
-# MAGIC from reviews_x_product limit 10;
+# MAGIC from reviews_x_product order by date limit 10;
