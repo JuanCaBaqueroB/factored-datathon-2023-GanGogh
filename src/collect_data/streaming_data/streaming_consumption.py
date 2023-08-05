@@ -2,17 +2,31 @@ from azure.eventhub import EventHubConsumerClient
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import json
 from datetime import datetime
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
+
+key_vault_name = "mlfactoreddata3978247496"
+keyvault_uri = f"https://{key_vault_name}.vault.azure.net"
+
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=keyvault_uri, credential=credential)
+
+
+spark.conf.set(f"fs.azure.account.key.{storage_account}.blob.core.windows.net",
+               f"{access_key}")
+
+
 
 # Event Hub namespace, topic, and connection details
 eventhub_namespace = "factored-datathon"
 eventhub_name = "factored_datathon_amazon_reviews_5"
-listen_policy_connection_string = "Endpoint=sb://factored-datathon.servicebus.windows.net/;SharedAccessKeyName=datathon_group_5;SharedAccessKey=bhbWAqLTLi5/DASs+HOCYuwO0Kf5QRS4x+AEhMZauUE=;EntityPath=factored_datathon_amazon_reviews_5"
+listen_policy_connection_string = client.get_secret("EVENTHUB-CONNSTRING")
 
 # Event Hub consumer group
 consumer_group = "gangogh"  # You can specify your custom consumer group here
 
 # Azure Blob Storage connection string and container name
-storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=test1fast;AccountKey=QnSkjChqVUQWCLs9t+yDSK4w02oQVBjWtP9dOOBhpw1O002GrWnk8LHfsU8Ys16QjNKmjnDw2RbM+AStEQNjww==;EndpointSuffix=core.windows.net"
+storage_connection_string = client.get_secret("STORAGE-ACCOUNT-CONNSTRING")
 container_name = "streaming-events-captured-factored"
 
 # Batch size for writing events
@@ -25,7 +39,8 @@ batched_events = []
 # Function to write the batched events to the blob
 def write_batch_to_blob():
     # Store the event data in JSON format in Azure Blob Storage
-    blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
+    blob_service_client = BlobServiceClient.from_connection_string(
+                                                    storage_connection_string)
     container_client = blob_service_client.get_container_client(container_name)
 
     # Generate a unique file name for the batch
@@ -55,7 +70,8 @@ def on_event(partition_context, event):
         write_batch_to_blob()
 
     # Store the event data in JSON format in Azure Blob Storage
-    blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
+    blob_service_client = BlobServiceClient.from_connection_string(
+                                                    storage_connection_string)
     container_client = blob_service_client.get_container_client(container_name)
 
     # Generate a unique file name for each event
@@ -83,7 +99,7 @@ client = EventHubConsumerClient.from_connection_string(
 )
 
 try:
-    # Receive events from the Event Hub (starting from the latest available position)
+    # Receive events from the Event Hub (starting from the latest available
     with client:
         client.receive(on_event=on_event)
 

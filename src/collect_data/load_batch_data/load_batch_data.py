@@ -3,8 +3,19 @@ from pyspark.sql import functions as func
 from pyspark.sql import DataFrame
 from typing import List
 import re
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
 
-storage_account = ""
+key_vault_name = "mlfactoreddata3978247496"
+keyvault_uri = f"https://{key_vault_name}.vault.azure.net"
+
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=keyvault_uri, credential=credential)
+
+storage_account = "safactoreddatathon"
+container_name = "source-files"
+sas_token_key = client.get_secret("SAS-TOKEN-FACTORED")
+
 
 AZURE_SERVER_CORE = "dfs.core.windows.net"
 AUTH_TYPE_ADLS = f"fs.azure.account.auth.type.{storage_account}"\

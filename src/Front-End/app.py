@@ -11,14 +11,24 @@ from dash.dependencies import Input, Output, State
 import pandas as pd
 import plotly.express as px
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
+
+key_vault_name = "mlfactoreddata3978247496"
+keyvault_uri = f"https://{key_vault_name}.vault.azure.net"
+
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=keyvault_uri, credential=credential)
+
 
 # Azure Blob Storage credentials
-storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=test1fast;AccountKey=QnSkjChqVUQWCLs9t+yDSK4w02oQVBjWtP9dOOBhpw1O002GrWnk8LHfsU8Ys16QjNKmjnDw2RbM+AStEQNjww==;EndpointSuffix=core.windows.net"
+storage_connection_string = client.get_secret("STORAGE-ACCOUNT-CONNSTRING")
 container_name = "visualization-tables"
 csv_filename = "summary_score_reviews.csv"
 
 # Connect to Azure Blob Storage
-blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
+blob_service_client = BlobServiceClient.from_connection_string(
+                                                    storage_connection_string)
 container_client = blob_service_client.get_container_client(container_name)
 blob_client = container_client.get_blob_client(csv_filename)
 
@@ -52,7 +62,7 @@ button = dbc.Button("Upload", color="primary")
 #------------------------------------------
 app = dash.Dash(
     external_stylesheets=[dbc.themes.CYBORG],
-    # These meta_tags ensure content is scaled correctly on different devices. Don't Delete!!
+    # These meta_tags ensure content is scaled correctly on different devices.
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ],
@@ -68,7 +78,9 @@ app.config.suppress_callback_exceptions = True
 # it consists of a title, and a toggle, the latter is hidden on large screens
 sidebar_header = dbc.Row(
     [
-        dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(encoded_image.decode()), className="display-4")),
+        dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(
+                            encoded_image.decode()), className="display-4")
+                ),
         dbc.Col(
             [
                 html.Button(
@@ -123,11 +135,18 @@ sidebar = html.Div(
         dbc.Collapse(
             dbc.Nav(
                 [
-                    dbc.NavLink("Home", href="/page-1", id="page-1-link", className="ico_home", ),
-                    dbc.NavLink("General overview", href="/page-2", id="page-2-link", className="ico_upload"),
-                    dbc.NavLink("Categories dashboard", href="/page-3", id="page-3-link", className="ico_store"),
-                    dbc.NavLink("About Us", href="/page-4", id="page-4-link", className="ico_about_"),
-                    dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'.format(encoded_image_2.decode()), className="display-4")),
+                    dbc.NavLink("Home", href="/page-1", id="page-1-link",
+                                className="ico_home", ),
+                    dbc.NavLink("General overview", href="/page-2",
+                                id="page-2-link", className="ico_upload"),
+                    dbc.NavLink("Categories dashboard", href="/page-3",
+                                id="page-3-link", className="ico_store"),
+                    dbc.NavLink("About Us", href="/page-4", id="page-4-link",
+                                className="ico_about_"),
+                    dbc.Col(dbc.CardImg(src='data:image/png;base64,{}'\
+                                .format(encoded_image_2.decode()),
+                                        className="display-4")
+                            ),
                 ],
                 vertical=True,
                 pills=True,
@@ -172,15 +191,23 @@ def render_page_content(pathname):
                             options=[
                                 {'label': 'Software', 'value': 'Software'},
                                 {'label': 'Books', 'value': 'Books'},
-                                {'label': 'Movies & TV', 'value': 'Movies & TV'},
-                                {'label': 'Audible Audiobooks', 'value': 'Audible Audiobooks'},
-                                {'label': 'Buy a Kindle', 'value': 'Buy a Kindle'},
-                                {'label': 'Health & Personal Care', 'value': 'Health & Personal Care'},
-                                {'label': 'Pet Supplies', 'value': 'Pet Supplies'},
-                                {'label': 'Toys & Games', 'value': 'Toys & Games'},
-                                {'label': 'Video Games', 'value': 'Video Games'},
-                                {'label': 'Sports Collectibles', 'value': 'Sports Collectibles'},
-                                {'label': 'Luxury Beauty', 'value': 'Luxury Beauty'}
+                                {'label': 'Movies & TV', 'value':'Movies & TV'},
+                                {'label': 'Audible Audiobooks',
+                                            'value': 'Audible Audiobooks'},
+                                {'label': 'Buy a Kindle',
+                                            'value': 'Buy a Kindle'},
+                                {'label': 'Health & Personal Care',
+                                            'value': 'Health & Personal Care'},
+                                {'label': 'Pet Supplies',
+                                            'value': 'Pet Supplies'},
+                                {'label': 'Toys & Games',
+                                            'value': 'Toys & Games'},
+                                {'label': 'Video Games',
+                                            'value': 'Video Games'},
+                                {'label': 'Sports Collectibles',
+                                            'value': 'Sports Collectibles'},
+                                {'label': 'Luxury Beauty',
+                                            'value': 'Luxury Beauty'}
                             ],
                             value='Software'),
                          dcc.Graph(id='graph-with-dropdown',
@@ -195,15 +222,23 @@ def render_page_content(pathname):
                             options=[
                                 {'label': 'Software', 'value': 'Software'},
                                 {'label': 'Books', 'value': 'Books'},
-                                {'label': 'Movies & TV', 'value': 'Movies & TV'},
-                                {'label': 'Audible Audiobooks', 'value': 'Audible Audiobooks'},
-                                {'label': 'Buy a Kindle', 'value': 'Buy a Kindle'},
-                                {'label': 'Health & Personal Care', 'value': 'Health & Personal Care'},
-                                {'label': 'Pet Supplies', 'value': 'Pet Supplies'},
-                                {'label': 'Toys & Games', 'value': 'Toys & Games'},
-                                {'label': 'Video Games', 'value': 'Video Games'},
-                                {'label': 'Sports Collectibles', 'value': 'Sports Collectibles'},
-                                {'label': 'Luxury Beauty', 'value': 'Luxury Beauty'}
+                                {'label': 'Movies & TV', 'value':'Movies & TV'},
+                                {'label': 'Audible Audiobooks',
+                                            'value': 'Audible Audiobooks'},
+                                {'label': 'Buy a Kindle',
+                                            'value': 'Buy a Kindle'},
+                                {'label': 'Health & Personal Care',
+                                            'value': 'Health & Personal Care'},
+                                {'label': 'Pet Supplies',
+                                            'value': 'Pet Supplies'},
+                                {'label': 'Toys & Games',
+                                            'value': 'Toys & Games'},
+                                {'label': 'Video Games',
+                                            'value': 'Video Games'},
+                                {'label': 'Sports Collectibles',
+                                            'value': 'Sports Collectibles'},
+                                {'label': 'Luxury Beauty',
+                                            'value': 'Luxury Beauty'}
                             ],
                             value='Software'),
                             dcc.Graph(id='graph-with-dropdown-qty',
@@ -240,8 +275,11 @@ def toggle_classname(n, classname):
     Input('dropdown-category-qty', 'value'))
 def display_graph(selected_category):
     filtered_df = df[df['maincat_10'] == selected_category]
-    fig = px.line(filtered_df, x='date', y='Qty', title=f"Data for Category {selected_category}").update_layout(
-    {"plot_bgcolor": "rgba(1, 6, 4, 5)", "paper_bgcolor": "rgba(1, 2, 3, 3)"})
+    fig = px.line(filtered_df, x='date', y='Qty',
+                    title=f"Data for Category {selected_category}")\
+            .update_layout({"plot_bgcolor": "rgba(1, 6, 4, 5)",
+                            "paper_bgcolor": "rgba(1, 2, 3, 3)"}
+                          )
     return fig
 
 
@@ -250,8 +288,11 @@ def display_graph(selected_category):
     Input('dropdown-category-verified', 'value'),
     Input('dropdown-category', 'value'))
 def display_graph(selected_category_v, selected_category):
-    filtered_df = df[(df['verified'] == bool(selected_category_v)) & (df['maincat_10'] == selected_category)]
-    fig = px.line(filtered_df, x='date', y='Average', title=f"Data for Category {selected_category}").update_layout(
+    filtered_df = df[(df['verified'] == bool(selected_category_v))\
+                        & (df['maincat_10'] == selected_category)]
+    fig = px.line(filtered_df, x='date', y='Average',
+                    title=f"Data for Category {selected_category}")\
+            .update_layout(
     {"plot_bgcolor": "rgba(1, 6, 4, 5)", "paper_bgcolor": "rgba(1, 2, 3, 3)"})
     return fig
 
