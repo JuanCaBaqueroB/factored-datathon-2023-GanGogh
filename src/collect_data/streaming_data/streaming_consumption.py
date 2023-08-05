@@ -13,7 +13,7 @@ consumer_group = "gangogh"  # You can specify your custom consumer group here
 
 # Azure Blob Storage connection string and container name
 storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=test1fast;AccountKey=QnSkjChqVUQWCLs9t+yDSK4w02oQVBjWtP9dOOBhpw1O002GrWnk8LHfsU8Ys16QjNKmjnDw2RbM+AStEQNjww==;EndpointSuffix=core.windows.net"
-container_name = "streaming-events-captured"
+container_name = "streaming-events-captured-factored"
 
 # Batch size for writing events
 batch_size = 1000
@@ -66,12 +66,13 @@ def on_event(partition_context, event):
     partition_number = blob_data.get("partition_number")
 
     # Print the result
-    blob_name = "new_event_{}.json".format(partition_number)
+    reception_time = int(datetime.utcnow().timestamp())
+    blob_name = "new_event_{}.json".format(reception_time)
 
     # Create a new blob with the event data in JSON format
     blob_client = container_client.get_blob_client(blob_name)
     blob_client.upload_blob(received_data, overwrite=True)
-    print(f'Blob uploaded as {blob_name}')
+    print(f'Blob uploaded as {blob_name} \n')
 
 
 # Create an instance of the EventHubConsumerClient
