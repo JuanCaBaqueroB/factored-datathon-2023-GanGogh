@@ -10,14 +10,6 @@ Follow the provided repo structure as long as possible:
 │   └── notebooks             # Jupyter notebooks for data exploration, analysis, experiment
 ├── src                       # Source code for data processing, modeling, training, eval
 |   ├── load_data_step
-│   ├── collect_data          # Code to collect data from different sources
-│   ├── train_step            # Code to train a model
-│   ├── predict_step          # Code to predict with a previously existing model
-│   ├── preprocess_step       # Code to preprocess data before going into the model
-│   ├── models                # Machine learning models to use
-│   ├── evaluate_step         # Code to compute evaluation metrics
-│   ├── ...
-│   └── common_utils          # Functions and constants shared across multiple modules
-├── tests                     # Code to perform unit testing
-├── docs                      # Documentation, presentations, reports, etc
-└── terraform                 # Code to provision infrastructure with Terraform
+│   ├── collect_data          # Code to collect data from real time and batch sources
+│   ├── model_prediction      # Call ML models from APIs
+```
