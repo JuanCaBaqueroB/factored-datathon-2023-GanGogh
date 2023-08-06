@@ -12,3 +12,4 @@ Follow the provided repo structure as long as possible:
 │   ├── collect_data          # Code to collect data from real time and batch sources
 │   ├── model_prediction      # Call ML models from APIs
 ```
+<img title="Architecture" alt="Alt text" src="arch_azure.png">
