@@ -5,7 +5,6 @@ Follow the provided repo structure as long as possible:
 ```yaml
 ├── README.md                 # Project overview and documentation
 ├── requirements.txt          # Dependencies to install for the project
-├── setup.cfg                 # Configurations of the execution environment
 ├── examples                  # Examples about how to use the project
 │   └── notebooks             # Jupyter notebooks for data exploration, analysis, experiment
 ├── src                       # Source code for data processing, modeling, training, eval
